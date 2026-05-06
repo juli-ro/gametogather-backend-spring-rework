@@ -1,3 +1,19 @@
 spring:
   application:
     name: gtg-spring-backend
+
+  # Database Configuration Todo: names for .env have to be changed
+  datasource:
+    url: jdbc:mariadb://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:spring_test_db}
+    username: ${DB_USER:spring_user}
+    password: ${DB_PASSWORD:secret}
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        #Needed because database columns are in pascal case
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+        physical-strategy: de.gametogather.gtgspringbackend.config.PascalCaseNamingStrategy
+    show-sql: true
