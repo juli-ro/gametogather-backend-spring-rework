@@ -1,6 +1,7 @@
 package de.gametogather.gtgspringbackend.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -11,21 +12,21 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "Images")
+@Table(name = "Roles")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@SQLDelete(sql = "UPDATE Images SET IsDeleted = true, DeletedAt = NOW() WHERE Id=?")
-public class Image extends ModelBase {
+@SQLDelete(sql = "UPDATE Roles SET IsDeleted = true, DeletedAt = NOW() WHERE Id=?")
+
+public class Role extends ModelBase {
     @Size(max = 255)
+    @NotNull
     @Column(nullable = false)
     private String name;
 
-    @Lob
-    @Column(columnDefinition = "MEDIUMBLOB", nullable = false)
-    private byte[] imageData;
-
-    @OneToMany(mappedBy = "image", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "role", cascade =  CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
-    private Set<Game> games = new LinkedHashSet<>();
+    private Set<User> users = new LinkedHashSet<>();
+
+
 }

@@ -1,23 +1,26 @@
 package de.gametogather.gtgspringbackend.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "Games")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @SQLDelete(sql = "UPDATE Games SET IsDeleted = true, DeletedAt = NOW() WHERE Id=?")
-@SQLRestriction("IsDeleted = false")
 public class Game extends ModelBase {
 
-    @Column(length = 255)
+    @Size(max = 255)
+    @Column(nullable = false)
     private String name;
 
     private int minPlayerNumber;
@@ -25,9 +28,12 @@ public class Game extends ModelBase {
     private int playTime;
     private int yearPublished;
     private int minAge;
-    private boolean isVerified;
 
-    // Navigation Properties ---
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isVerified = false;
+
+    // Navigation Properties
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GenreId")
@@ -38,5 +44,6 @@ public class Game extends ModelBase {
     private Image image;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserGame> userGames;
+    @Builder.Default
+    private Set<UserGame> userGames = new LinkedHashSet<>();
 }
