@@ -5,6 +5,8 @@ import de.gametogather.gtgspringbackend.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,24 +30,36 @@ public class GameController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    //Todo: see add User Game. URL needs to be changed
+    @GetMapping("/user-games")
+    public ResponseEntity<List<GameDto>> getAllGamesByUserId(@AuthenticationPrincipal Jwt jwt) {
+        UUID userId = UUID.fromString(jwt.getSubject());
+
+        return ResponseEntity.ok(gameService.getAllGamesByUserId(userId));
+    }
+
     @PostMapping
     public ResponseEntity<GameDto> createGame(@RequestBody GameDto gameDto) {
-
         GameDto savedDto = gameService.createGame(gameDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDto);
     }
 
-    //Todo: Have to create jwt implementation first
+    @PutMapping
+    public ResponseEntity<GameDto> updateGame(@RequestBody GameDto gameDto) {
+        GameDto savedDto = gameService.updateGame(gameDto);
+        return ResponseEntity.ok(savedDto);
+    }
+
     //Todo: URL needs to be changed in the frontend
-//    @PostMapping("/user-games")
-//    public ResponseEntity<Void> addUserGame(@RequestBody GameDto dto, @AuthenticationPrincipal Jwt jwt) {
-//        try {
-//            UUID userId = UUID.fromString(jwt.getSubject());
-//            gameService.addUserGame(dto.id(), userId);
-//            return ResponseEntity.ok().build();
-//        } catch (IllegalStateException e) {
-//            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-//        }
-//    }
+    @PostMapping("/user-games")
+    public ResponseEntity<Void> addUserGame(@RequestBody GameDto dto, @AuthenticationPrincipal Jwt jwt) {
+        try {
+            UUID userId = UUID.fromString(jwt.getSubject());
+            gameService.addUserGame(dto.id(), userId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
 
 }

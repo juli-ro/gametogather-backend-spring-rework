@@ -35,12 +35,25 @@ public class GameService {
         return gameRepository.findById(id).map(gameMapper::toDto);
     }
 
+    public List<GameDto> getAllGamesByUserId(UUID userId) {
+        return gameRepository.FindAllByUserId(userId).stream()
+                .map(gameMapper::toDto)
+                .toList();
+    }
+
+    @Transactional
     public GameDto createGame(GameDto gameDto) {
         Game game = gameMapper.toEntity(gameDto);
         Game UpdatedGame = gameRepository.save(game);
         return gameMapper.toDto(UpdatedGame);
     }
 
+    @Transactional
+    public GameDto updateGame(GameDto gameDto) {
+        Game game = gameMapper.toEntity(gameDto);
+        Game UpdatedGame = gameRepository.save(game);
+        return gameMapper.toDto(UpdatedGame);
+    }
 
     @Transactional
     public void addUserGame(UUID gameId, UUID userId) {
