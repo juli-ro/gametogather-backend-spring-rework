@@ -14,4 +14,6 @@ public interface GameRepository extends JpaRepository<Game, UUID> {
 
     @Query("SELECT DISTINCT ug.game FROM GroupUser gu JOIN gu.user u JOIN u.userGames ug WHERE gu.group.id = :groupId")
     List<Game> findDistinctGamesByGroupId(@Param("groupId") UUID groupId);
+
+
 }

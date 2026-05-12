@@ -57,8 +57,17 @@ public class GameService {
 
     @Transactional
     public void addUserGame(UUID gameId, UUID userId) {
-        if (userGameRepository.existsByUserIdAndGameId(userId, gameId)) {
-            throw new IllegalStateException("User already has this game");
+        //The following check is needed in case a game is soft deleted
+        Optional<UserGame> existingLink = userGameRepository.findByUserIdAndGameId(userId, gameId);
+        if (existingLink.isPresent()) {
+            UserGame link = existingLink.get();
+            if (link.isDeleted()) {
+                link.setDeleted(false);
+                userGameRepository.save(link);
+                return;
+            } else {
+                throw new IllegalStateException("User already has this game");
+            }
         }
 
         User userProxy = userRepository.getReferenceById(userId);
@@ -70,5 +79,23 @@ public class GameService {
                 .build();
 
         userGameRepository.save(userGame);
+    }
+
+    @Transactional
+    public void deleteUserGame(UUID gameId, UUID userId) {
+        UserGame userGame = userGameRepository.findByUserIdAndGameId(userId, gameId)
+                .orElseThrow(() -> new IllegalStateException("Entry not found"));
+        userGameRepository.delete(userGame);
+    }
+
+    @Transactional
+    public void deleteGame(UUID gameId) {
+        gameRepository.deleteById(gameId);
+    }
+
+    public List<GameDto> getGroupGamesByGroupId(UUID groupId) {
+        return gameRepository.findDistinctGamesByGroupId(groupId).stream()
+                .map(gameMapper::toDto)
+                .toList();
     }
 }

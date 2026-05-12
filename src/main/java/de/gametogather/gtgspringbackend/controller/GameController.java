@@ -38,6 +38,12 @@ public class GameController {
         return ResponseEntity.ok(gameService.getAllGamesByUserId(userId));
     }
 
+    //Todo: URL needs to be changed in the frontend
+    @GetMapping("/group-games/{groupId}")
+    public ResponseEntity<List<GameDto>> getGroupGamesByGroupId(@PathVariable UUID groupId) {
+        return ResponseEntity.ok(gameService.getGroupGamesByGroupId(groupId));
+    }
+
     @PostMapping
     public ResponseEntity<GameDto> createGame(@RequestBody GameDto gameDto) {
         GameDto savedDto = gameService.createGame(gameDto);
@@ -50,6 +56,16 @@ public class GameController {
         return ResponseEntity.ok(savedDto);
     }
 
+    @DeleteMapping
+    public ResponseEntity<Void> deleteGame(@RequestBody UUID gameId) {
+        try {
+            gameService.deleteGame(gameId);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     //Todo: URL needs to be changed in the frontend
     @PostMapping("/user-games")
     public ResponseEntity<Void> addUserGame(@RequestBody GameDto dto, @AuthenticationPrincipal Jwt jwt) {
@@ -60,6 +76,18 @@ public class GameController {
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
+    }
+
+    @PostMapping("/user-games/{gameId}")
+    public ResponseEntity<Void> deleteUserGame(@PathVariable UUID gameId, @AuthenticationPrincipal Jwt jwt) {
+        try {
+            UUID userId = UUID.fromString(jwt.getSubject());
+            gameService.deleteUserGame(gameId, userId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
 }
