@@ -9,6 +9,7 @@ public record MeetDto(
         String meetType,
         boolean hasMovies,
         boolean hasGames,
+
         UUID groupId,
 
         List<ActivityDto> activities,

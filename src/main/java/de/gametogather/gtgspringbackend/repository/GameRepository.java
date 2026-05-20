@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface GameRepository extends JpaRepository<Game, UUID> {
     @Query("SELECT ug.game FROM UserGame ug WHERE ug.user.id = :userId")
-    List<Game> FindAllByUserId(@Param("userId") UUID userId);
+    List<Game> findAllByUserId(@Param("userId") UUID userId);
 
     @Query("SELECT DISTINCT ug.game FROM GroupUser gu JOIN gu.user u JOIN u.userGames ug WHERE gu.group.id = :groupId")
     List<Game> findDistinctGamesByGroupId(@Param("groupId") UUID groupId);

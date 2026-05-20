@@ -1,14 +1,12 @@
 package de.gametogather.gtgspringbackend.mapper;
 
 import de.gametogather.gtgspringbackend.model.dto.ActivityDto;
-import de.gametogather.gtgspringbackend.model.dto.MeetDateSuggestionDto;
 import de.gametogather.gtgspringbackend.model.dto.MeetDto;
-import de.gametogather.gtgspringbackend.model.dto.MeetUserDto;
 import de.gametogather.gtgspringbackend.model.entity.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {MeetDateSuggestionMapper.class, MeetUserMapper.class})
 public interface MeetMapper {
 
     @Mapping(source = "group.id", target = "groupId")
@@ -16,8 +14,6 @@ public interface MeetMapper {
     MeetDto toDto(Meet meet);
 
     ActivityDto toDto(Activity activity);
-    MeetDateSuggestionDto toDto(MeetDateSuggestion meetDateSuggestion);
-    MeetUserDto toDto(MeetUser meetUser);
 
     default ActivityDto unwrapMeetActivity(MeetActivity meetActivity) {
         if (meetActivity == null || meetActivity.getActivity() == null) {
@@ -26,4 +22,11 @@ public interface MeetMapper {
         // Grab the actual activity and map it
         return toDto(meetActivity.getActivity());
     }
+
+    @Mapping(target = "group", ignore = true)
+    @Mapping(target = "lastNotificationSentAt", ignore = true)
+    @Mapping(target = "meetActivities", ignore = true)
+    @Mapping(target = "meetDateSuggestions", ignore = true)
+    @Mapping(target = "meetUsers", ignore = true)
+    Meet toEntity(MeetDto meetDto);
 }

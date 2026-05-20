@@ -36,7 +36,7 @@ public class GameService {
     }
 
     public List<GameDto> getAllGamesByUserId(UUID userId) {
-        return gameRepository.FindAllByUserId(userId).stream()
+        return gameRepository.findAllByUserId(userId).stream()
                 .map(gameMapper::toDto)
                 .toList();
     }

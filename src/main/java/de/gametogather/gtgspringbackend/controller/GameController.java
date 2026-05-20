@@ -30,7 +30,7 @@ public class GameController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    //Todo: see add User Game. URL needs to be changed
+    //Todo: see add User Game. URL needs to be changed in frontend
     @GetMapping("/user-games")
     public ResponseEntity<List<GameDto>> getAllGamesByUserId(@AuthenticationPrincipal Jwt jwt) {
         UUID userId = UUID.fromString(jwt.getSubject());

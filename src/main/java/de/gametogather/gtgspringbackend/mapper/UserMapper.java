@@ -8,7 +8,7 @@ import de.gametogather.gtgspringbackend.model.entity.UserGame;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {GameMapper.class})
 public interface UserMapper {
     @Mapping(source = "role.name", target = "roleName")
     @Mapping(source = "userGames", target = "games")
