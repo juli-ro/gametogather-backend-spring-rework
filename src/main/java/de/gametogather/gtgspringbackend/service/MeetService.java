@@ -26,4 +26,6 @@ public class MeetService {
         Meet updatedMeet = meetRepository.save(meet);
         return meetMapper.toDto(updatedMeet);
     }
+
+
 }

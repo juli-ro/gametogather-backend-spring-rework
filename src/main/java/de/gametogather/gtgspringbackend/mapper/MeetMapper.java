@@ -19,7 +19,6 @@ public interface MeetMapper {
         if (meetActivity == null || meetActivity.getActivity() == null) {
             return null;
         }
-        // Grab the actual activity and map it
         return toDto(meetActivity.getActivity());
     }
 
