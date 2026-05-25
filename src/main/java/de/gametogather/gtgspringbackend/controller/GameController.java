@@ -50,14 +50,19 @@ public class GameController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDto);
     }
 
-    @PutMapping
-    public ResponseEntity<GameDto> updateGame(@RequestBody GameDto gameDto) {
+    //Todo: url needs to be changed in frontend
+    @PutMapping("/{gameId}")
+    public ResponseEntity<GameDto> updateGame(@PathVariable UUID gameId, @RequestBody GameDto gameDto) {
+        if(!gameId.equals(gameDto.id())){
+            return ResponseEntity.badRequest().build();
+        }
         GameDto savedDto = gameService.updateGame(gameDto);
         return ResponseEntity.ok(savedDto);
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteGame(@RequestBody UUID gameId) {
+    //Todo: url needs to be changed in frontend
+    @DeleteMapping("/{gameId}")
+    public ResponseEntity<Void> deleteGame(@PathVariable UUID gameId) {
         try {
             gameService.deleteGame(gameId);
             return ResponseEntity.noContent().build();
@@ -67,23 +72,24 @@ public class GameController {
     }
 
     //Todo: URL needs to be changed in the frontend
-    @PostMapping("/user-games")
-    public ResponseEntity<Void> addUserGame(@RequestBody GameDto dto, @AuthenticationPrincipal Jwt jwt) {
+    @PostMapping("/user-games/{gameId}")
+    public ResponseEntity<Void> addUserGame(@PathVariable UUID gameId, @AuthenticationPrincipal Jwt jwt) {
         try {
             UUID userId = UUID.fromString(jwt.getSubject());
-            gameService.addUserGame(dto.id(), userId);
-            return ResponseEntity.ok().build();
+            gameService.addUserGame(gameId, userId);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 
-    @PostMapping("/user-games/{gameId}")
+    //Todo: URL needs to be changed in the frontend
+    @DeleteMapping("/user-games/{gameId}")
     public ResponseEntity<Void> deleteUserGame(@PathVariable UUID gameId, @AuthenticationPrincipal Jwt jwt) {
         try {
             UUID userId = UUID.fromString(jwt.getSubject());
             gameService.deleteUserGame(gameId, userId);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
